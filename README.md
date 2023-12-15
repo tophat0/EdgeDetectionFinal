@@ -33,4 +33,4 @@ Feel free to explore and compare the results of each algorithm on the input imag
 
 You can download the PDF document by clicking the link below:
 
-[Download PDF](Computer Vision Final Report.pdf)
+[Download PDF](./Computer Vision Final Report.pdf)
