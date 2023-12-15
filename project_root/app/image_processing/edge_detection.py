@@ -43,8 +43,7 @@ def edge_detection(image):
     # Draw valid contours on the black image
     cv2.drawContours(contour_image, valid_contours, -1, (255), thickness=2)
 
-    return contour_image
-import cv2
+    return contour_image.astype('uint8')  # Return NumPy array
 
 def apply_canny(image):
     # Convert the PIL Image to a NumPy array
@@ -60,26 +59,12 @@ def apply_canny(image):
     # Apply Canny edge detection
     edge_array = feature.canny(image_array)
 
-    # Convert the NumPy array to a PIL Image
-    edge_image = Image.fromarray((edge_array * 255).astype('uint8'))
+    
+    return (edge_array * 255).astype('uint8')  # Return NumPy array
 
-    return edge_image
-
-def detect_edges(image_path, low_threshold=50, high_threshold=150):
-    # Read the image
-    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-
-    # Apply Gaussian blur to the image to reduce noise and improve edge detection
-    blurred = cv2.GaussianBlur(img, (5, 5), 0)
-
-    # Use Canny edge detector
-    edges = cv2.Canny(blurred, low_threshold, high_threshold)
-
-    return edges
-
-def prewitt_edge_detection(image_path, threshold=50):
-    # Read the image
-    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+def prewitt_edge_detection(image):
+    # Convert the PIL Image to a NumPy array
+    img = np.array(image)
 
     # Apply Prewitt operators for horizontal and vertical gradients
     prewitt_kernel_x = np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]])
@@ -96,13 +81,14 @@ def prewitt_edge_detection(image_path, threshold=50):
 
     # Apply thresholding to obtain binary edges
     edges = np.zeros_like(normalized_gradient)
-    edges[normalized_gradient > threshold] = 255
+    edges[normalized_gradient > 50] = 255
 
-    return edges.astype(np.uint8)
+    
+    return edges.astype('uint8')  # Return NumPy array
 
-def log_edge_detection(image_path, threshold=50):
-    # Read the image
-    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+def log_edge_detection(image):
+    # Convert the PIL Image to a NumPy array
+    img = np.array(image)
 
     # Apply Gaussian blur to the image
     blurred = cv2.GaussianBlur(img, (5, 5), 0)
@@ -118,18 +104,13 @@ def log_edge_detection(image_path, threshold=50):
 
     # Apply thresholding to obtain binary edges
     edges = np.zeros_like(normalized_gradient)
-    edges[normalized_gradient > threshold] = 255
+    edges[normalized_gradient > 50] = 255
 
-    return edges.astype(np.uint8)
+    return edges.astype('uint8')  # Return NumPy array
 
-def sobel_edges(image_path, threshold=50):
-    # Read the image
-    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-
-    # Check if the image is loaded successfully
-    if img is None or img.size == 0:
-        print(f"Error: Unable to load image from {image_path}")
-        return None
+def sobel_edges(image):
+    # Convert the PIL Image to a NumPy array
+    img = np.array(image)
 
     # Apply Sobel operators for horizontal and vertical gradients
     sobel_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
@@ -143,6 +124,7 @@ def sobel_edges(image_path, threshold=50):
 
     # Apply thresholding to obtain binary edges
     edges = np.zeros_like(normalized_gradient)
-    edges[normalized_gradient > threshold] = 255
+    edges[normalized_gradient > 50] = 255
 
-    return edges.astype(np.uint8)
+    # return Image.fromarray(edges.astype('uint8'))
+    return edges.astype('uint8')  # Return NumPy array

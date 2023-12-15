@@ -3,8 +3,8 @@ from tkinter import filedialog
 import cv2
 from PIL import Image, ImageTk
 import numpy as np
-from app.image_processing.edge_detection import apply_hed, apply_canny, apply_kirsch, apply_log, apply_prewitt, apply_sobel, edge_detection
-from app.image_processing.image_isolation import isolate_and_count_objects
+from app.image_processing.edge_detection import apply_canny, prewitt_edge_detection, log_edge_detection, sobel_edges, edge_detection
+from app.image_processing.image_isolation import isolate_and_count_objects, apply_edge_detection_functions
 
 class ImageUploaderApp:
     def __init__(self, master):
@@ -120,6 +120,10 @@ class ImageUploaderApp:
         # Display the blank box and cutout images
         self.display_blank_box(total_objects=total_objects)
         self.display_cutout_images(cutout_images)
+
+        edgeimageslist = apply_edge_detection_functions(file_path)
+
+        self.display_cutout_images(edgeimageslist)
 
 def run_app():
     root = tk.Tk()
