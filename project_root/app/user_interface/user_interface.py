@@ -3,8 +3,8 @@ from tkinter import filedialog
 import cv2
 from PIL import Image, ImageTk
 import numpy as np
-from app.image_processing.edge_detection import apply_hed, apply_canny, apply_kirsch, apply_log, apply_prewitt, apply_sobel, edge_detection
-from app.image_processing.image_isolation import isolate_and_count_objects
+from app.image_processing.edge_detection import edge_detection, apply_canny, prewitt_edge_detection, log_edge_detection, apply_hed, sobel_edges
+from app.image_processing.image_isolation import isolate_and_count_objects, detect_and_label_objects
 
 class ImageUploaderApp:
     def __init__(self, master):
