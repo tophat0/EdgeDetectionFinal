@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-def isolate_and_count_objects(edge_image, num_objects_to_display=5, threshold_value=254):
+def isolate_and_count_objects(edge_image, num_objects_to_display=5, threshold_value=50):
     try:
         # Threshold the edge image to obtain a binary image
         _, binary_image = cv2.threshold(edge_image, threshold_value, 255, cv2.THRESH_BINARY)

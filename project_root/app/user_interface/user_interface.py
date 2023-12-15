@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog
+import cv2
 from PIL import Image, ImageTk
 import numpy as np
-from app.image_processing.edge_detection import apply_canny
+from app.image_processing.edge_detection import apply_hed, apply_canny, apply_kirsch, apply_log, apply_prewitt, apply_sobel, edge_detection
 from app.image_processing.image_isolation import isolate_and_count_objects
 
 class ImageUploaderApp:
@@ -68,7 +69,9 @@ class ImageUploaderApp:
 
         # Display cutout images in a 2x2 grid
         for i, cutout_image in enumerate(cutout_images):
-            cutout_tk_image = ImageTk.PhotoImage(Image.fromarray(cutout_image))
+            # Convert NumPy array to PhotoImage
+            cutout_tk_image = ImageTk.PhotoImage(Image.fromarray(cv2.cvtColor(cutout_image, cv2.COLOR_BGR2RGB)))
+
             cutout_label = tk.Label(self.cutout_frame, image=cutout_tk_image)
             cutout_label.grid(row=i // 2, column=i % 2, padx=10, pady=10)
 
@@ -82,10 +85,11 @@ class ImageUploaderApp:
             self.process_image(file_path)
 
     def process_image(self, file_path, max_width=300, max_height=300):
-        original_image = Image.open(file_path)
+        # Read the image using OpenCV
+        original_image = cv2.imread(file_path)
 
-        # Calculate new dimensions while maintaining aspect ratio
-        width, height = original_image.size
+        # Resize the image while maintaining aspect ratio
+        width, height = original_image.shape[1], original_image.shape[0]
         aspect_ratio = width / height
 
         if aspect_ratio > 1:  # Landscape image
@@ -95,14 +99,13 @@ class ImageUploaderApp:
             new_height = min(height, max_height)
             new_width = int(new_height * aspect_ratio)
 
-        # Resize the image
-        resized_image = original_image.resize((new_width, new_height), Image.LANCZOS)
+        # Resize the image using OpenCV
+        resized_image = cv2.resize(original_image, (new_width, new_height))
+        # Apply Canny edge detection
+        edge_image = edge_detection(resized_image)
 
-        # Apply Canny edge detection from the edge_detection module
-        edge_image = apply_canny(resized_image)
-
-        # Set the uploaded_image attribute
-        self.uploaded_image = ImageTk.PhotoImage(edge_image)
+        # Convert the NumPy array to a PIL Image and create PhotoImage
+        self.uploaded_image = ImageTk.PhotoImage(Image.fromarray(np.array(edge_image)))
 
         # Isolate and count objects directly from the edge-detected image
         total_objects, num_objects, cutout_images = isolate_and_count_objects(np.array(edge_image))
