@@ -38,3 +38,35 @@ def isolate_and_count_objects(edge_image, num_objects_to_display=5, threshold_va
     except Exception as e:
         print(f"Error in isolate_and_count_objects: {e}")
         return None, None, None
+
+def detect_and_label_objects(original_image, edge_image):
+    # Find contours in the edge-detected image
+    contours, _ = cv2.findContours(edge_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Create a blank image to draw the labeled objects
+    labeled_image = original_image.copy()
+
+    # Initialize a counter for labeling each object
+    object_count = 0
+
+    for contour in contours:
+        # Ignore small contours (noise)
+        if cv2.contourArea(contour) > 100:
+            # Increment object count
+            object_count += 1
+
+            # Get a random color for the current object
+            color = np.random.randint(0, 256, size=3).tolist()
+
+            # Draw the contour on the original image
+            cv2.drawContours(labeled_image, [contour], 0, color, 2)
+
+            # Get the bounding box of the contour
+            x, y, w, h = cv2.boundingRect(contour)
+
+            # Draw the bounding box and label on the original image
+            cv2.rectangle(labeled_image, (x, y), (x + w, y + h), color, 2)
+            cv2.putText(labeled_image, str(object_count), (x + w // 2, y + h // 2),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+    return labeled_image
