@@ -29,3 +29,8 @@ The "output" folder contains images that have been processed using various edge 
 
 Feel free to explore and compare the results of each algorithm on the input images.
 
+# Computer Vision Final Report
+
+You can download the PDF document by clicking the link below:
+
+[Download PDF](Computer Vision Final Report.pdf)
