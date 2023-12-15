@@ -28,9 +28,3 @@ The "output" folder contains images that have been processed using various edge 
 6. **Hed Detection**: Image processed using the HED (Holistically-Nested Edge Detection) algorithm.
 
 Feel free to explore and compare the results of each algorithm on the input images.
-
-# Computer Vision Final Report
-
-You can download the PDF document by clicking the link below:
-
-[Download PDF](./Computer Vision Final Report.pdf)
