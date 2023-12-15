@@ -71,12 +71,15 @@ def prewitt_edge_detection(image):
     # Convert the PIL Image to a NumPy array
     img = np.array(image)
 
+    # Convert to grayscale
+    gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
     # Apply Prewitt operators for horizontal and vertical gradients
     prewitt_kernel_x = np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]])
     prewitt_kernel_y = np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]])
 
-    gradient_x = cv2.filter2D(img, cv2.CV_64F, prewitt_kernel_x)
-    gradient_y = cv2.filter2D(img, cv2.CV_64F, prewitt_kernel_y)
+    gradient_x = cv2.filter2D(gray_image, cv2.CV_64F, prewitt_kernel_x)
+    gradient_y = cv2.filter2D(gray_image, cv2.CV_64F, prewitt_kernel_y)
 
     # Compute gradient magnitude
     gradient_magnitude = np.sqrt(gradient_x**2 + gradient_y**2)
@@ -88,15 +91,17 @@ def prewitt_edge_detection(image):
     edges = np.zeros_like(normalized_gradient)
     edges[normalized_gradient > 50] = 255
 
-    
     return edges.astype('uint8')  # Return NumPy array
 
 def log_edge_detection(image):
     # Convert the PIL Image to a NumPy array
     img = np.array(image)
 
+    # Convert to grayscale
+    gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
     # Apply Gaussian blur to the image
-    blurred = cv2.GaussianBlur(img, (5, 5), 0)
+    blurred = cv2.GaussianBlur(gray_image, (5, 5), 0)
 
     # Apply Laplacian operator
     laplacian = cv2.Laplacian(blurred, cv2.CV_64F)
@@ -117,9 +122,12 @@ def sobel_edges(image):
     # Convert the PIL Image to a NumPy array
     img = np.array(image)
 
+    # Convert to grayscale
+    gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
     # Apply Sobel operators for horizontal and vertical gradients
-    sobel_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
-    sobel_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)
+    sobel_x = cv2.Sobel(gray_image, cv2.CV_64F, 1, 0, ksize=3)
+    sobel_y = cv2.Sobel(gray_image, cv2.CV_64F, 0, 1, ksize=3)
 
     # Compute gradient magnitude
     gradient_magnitude = np.sqrt(sobel_x**2 + sobel_y**2)
@@ -132,6 +140,7 @@ def sobel_edges(image):
     edges[normalized_gradient > 50] = 255
 
     return edges.astype(np.uint8)
+
 
 def apply_hed(image):
     # Convert the PIL Image to a NumPy array

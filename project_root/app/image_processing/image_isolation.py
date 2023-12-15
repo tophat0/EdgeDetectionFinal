@@ -5,7 +5,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 
-from app.image_processing.edge_detection import apply_canny, prewitt_edge_detection, log_edge_detection, sobel_edges, edge_detection
+from app.image_processing.edge_detection import apply_canny, prewitt_edge_detection, log_edge_detection, sobel_edges, edge_detection, apply_hed
 
 def isolate_and_count_objects(edge_image, num_objects_to_display=5, threshold_value=50):
     try:
@@ -95,7 +95,7 @@ def apply_edge_detection_functions(image_path):
             ("Canny Edge Detection", canny_result),
             ("Prewitt Edge Detection", prewitt_result),
             ("Log Edge Detection", log_result),
-            ("Sobel Edges", sobel_result)
+            ("Sobel Edges", sobel_result),
         ]
 
         # Display the results
