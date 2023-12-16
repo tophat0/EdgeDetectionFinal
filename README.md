@@ -31,7 +31,7 @@ Feel free to explore and compare the results of each algorithm on the input imag
 1. **Window Display:**
    - Upon running `main.py`, a window will pop up with an option to select an image file.
    - After selecting an image file, the window will display:
-     - The result of edge detection using your algorithm.
+     - The result of ou redge detection algorithm on the image
      - The 5 largest objects in the image.
 
 2. **Additional Window:**
@@ -40,11 +40,10 @@ Feel free to explore and compare the results of each algorithm on the input imag
 ### evaluation.py
 
 1. **Graph:**
-   - The script will generate a graph showing the runtimes of the edge detection algorithms.
+   - A graph showing the runtimes of the edge detection algorithms.
 
 2. **Algorithm Results:**
-   - The edge detection results of various algorithms will be displayed.
+   - The edge detection results of all the algorithms will be displayed.
 
 3. **Saving Output:**
-   - The result of your edge detection algorithm will be saved to the output folder.
-
+   - The result of our edge detection algorithm on BDSD500 will be saved to the output folder.
