@@ -33,9 +33,11 @@ Feel free to explore and compare the results of each algorithm on the input imag
    - After selecting an image file, the window will display:
      - The result of ou redge detection algorithm on the image
      - The 5 largest objects in the image.
+![image](https://github.com/tophat0/EdgeDetectionFinal/assets/69655459/04c0ac2f-ceed-4595-b30e-006cef6227bb)
 
 2. **Additional Window:**
    - Another window will also pop up showing the edge detection results of the other algorithms.
+![image](https://github.com/tophat0/EdgeDetectionFinal/assets/69655459/462f9997-fcc3-48d7-a464-84bd4a655806)
 
 ### evaluation.py
 
