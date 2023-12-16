@@ -1,23 +1,26 @@
 # edge_detection.py
 
-from PIL import Image, ImageTk
+from PIL import Image
 from skimage import feature, filters
 import numpy as np
 import cv2
 from scipy.signal import convolve2d
-from scipy.ndimage import gaussian_laplace
 
-
+# Import Pre-Trained HED Model
 net = cv2.dnn.readNetFromCaffe('app/image_processing/deploy.prototxt', 'app/image_processing/hed_pretrained_bsds.caffemodel')
 
-def edge_detection(image, k_size=3, threshold=75, min_area=3):
+# Our edge detection method
+def edge_detection(image):
+    k_size=3           # Gaussian kernel size
+    threshold=75       # Edge detection threshold
+    min_area=3         # Object boundary threshold
+
     # Step 1: Smooth the image
     blurred = cv2.GaussianBlur(image, (k_size, k_size), 0)
 
     # Step 2: Compute dark channel prior
     dark_channel = np.min(blurred, axis=2)
     dark_channel_percentile = np.percentile(dark_channel, 0.1)
-    transmission = 1 - dark_channel / dark_channel_percentile
 
     # Step 3: Convert to grayscale
     gray_image = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
@@ -42,12 +45,7 @@ def edge_detection(image, k_size=3, threshold=75, min_area=3):
     # Draw valid contours on the black image
     cv2.drawContours(contour_image, valid_contours, -1, (255), thickness=2)
 
-    # Overlay contours on the original image
-    result = cv2.drawContours(image.copy(), valid_contours, -1, (0, 255, 0), thickness=2)
-
-
-
-    return edges
+    return edges, contour_image
 
 
 def apply_canny(image):
@@ -118,36 +116,68 @@ def log_edge_detection(image):
 
     return edges.astype('uint8')  # Return NumPy array
 
-def sobel_edges(image):
+def apply_sobel(image):
     # Convert the PIL Image to a NumPy array
-    img = np.array(image)
+    image_array = np.array(image)
 
-    # Convert to grayscale
-    gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Apply Sobel operators for horizontal and vertical gradients
-    sobel_x = cv2.Sobel(gray_image, cv2.CV_64F, 1, 0, ksize=3)
-    sobel_y = cv2.Sobel(gray_image, cv2.CV_64F, 0, 1, ksize=3)
+    # Convert to grayscale if the image is in color
+    if len(image_array.shape) == 3:
+        image_array = image_array.mean(axis=-1)
 
-    # Compute gradient magnitude
-    gradient_magnitude = np.sqrt(sobel_x**2 + sobel_y**2)
 
-    # Normalize the gradient magnitude to the range [0, 255]
-    normalized_gradient = (gradient_magnitude / gradient_magnitude.max()) * 255
+    # Apply Sobel edge detection
+    edge_array = filters.sobel(image_array)
 
-    # Apply thresholding to obtain binary edges
-    edges = np.zeros_like(normalized_gradient)
-    edges[normalized_gradient > 50] = 255
 
-    return edges.astype(np.uint8)
+    # Normalize values to the range [0, 255]
+    edge_array = (edge_array - np.min(edge_array)) / (np.max(edge_array) - np.min(edge_array)) * 255
 
+
+    # Convert the NumPy array to a PIL Image
+    edge_image = Image.fromarray(edge_array.astype('uint8'))
+
+
+    return edge_image
+
+def apply_kirsch(image):
+    # Convert the PIL Image to a NumPy array
+    image_array = np.array(image)
+
+    # Convert to grayscale if the image is in color
+    if len(image_array.shape) == 3:
+        image_array = image_array.mean(axis=-1)
+
+    # Apply Kirsch edge detection using a convolution kernel
+    kirsch_kernel = np.array([
+        [[-3, -3,  5], [-3,  0,  5], [-3, -3,  5]],
+        [[-3,  5,  5], [-3,  0,  5], [-3, -3, -3]],
+        [[ 5,  5,  5], [-3,  0, -3], [-3, -3, -3]],
+        [[ 5,  5, -3], [ 5,  0, -3], [-3, -3, -3]],
+    ])
+
+    # Convolve the image with each kernel
+    kirsch_responses = [convolve2d(image_array, kernel, mode='same', boundary='symm') for kernel in kirsch_kernel]
+
+    # Combine the responses into a single array
+    kirsch_array = np.max(np.abs(kirsch_responses), axis=0)
+
+    # Normalize values to the range [0, 255]
+    kirsch_array = (kirsch_array - np.min(kirsch_array)) / (np.max(kirsch_array) - np.min(kirsch_array)) * 255
+
+    # Convert the NumPy array to a PIL Image
+    kirsch_image = Image.fromarray(kirsch_array.astype('uint8'))
+
+    return kirsch_image
 
 def apply_hed(image):
     # Convert the PIL Image to a NumPy array
     image_array = np.array(image)
+
+    # Get the height and width of the image
     (H, W) = image_array.shape[:2]
 
-
+    # Puts image into HED processinf format, use the model to find edges
     blob = cv2.dnn.blobFromImage(image_array, scalefactor=1.0, size=(W, H),swapRB=False, crop=False)
     net.setInput(blob)
     hed = net.forward() 
@@ -155,6 +185,7 @@ def apply_hed(image):
     # Convert the edges to a uint8 image
     hed = (hed * 255).astype(np.uint8)
 
+    # Convert the NumPy array to a PIL Image in grayscale mode
     hed_image = Image.fromarray(hed.squeeze(), mode='L')
 
     return hed_image
